@@ -7,52 +7,50 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3030/api';
-
-const Login = () => {
-  const [email, setEmail] = useState<string>('');
+const Verify = () => {
+  const [code, setCode] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const router = useRouter();
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
 
   const handleBack = () => {
     router.back();
   };
-  const handleSignIn = async (email: string) => {
+
+  const handleCodeChang = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCode(e.target.value);
+  };
+
+  const handleSubmit = async (code: string) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_URL}/auth/signIn`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
+      const email = localStorage.getItem('email');
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, code }),
+        }
+      );
       const data = await res.json();
-      console.log('Response from signIn:', data);
+      console.log('Response from verify:', data);
       console.log('Response status:', res);
 
       if (res.ok) {
-        localStorage.setItem('email', email);
-        toast.success(data.message || 'Code sent to your email');
-        router.push('/verify');
+        toast.success(data.message || 'Code verified successfully');
+        router.push('/');
       } else {
-        toast.error(data.error || 'Failed to send code');
-        console.error('Sign in failed:', data.message || 'Unknown error');
+        toast.error(data.message || 'Failed to verify code');
       }
     } catch (error) {
-      console.error('Error during sign in:', error);
+      console.error('Error during code verification:', error);
       toast.error('An error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="flex items-center justify-center flex-col w-1/4 gap-10 border shadow-sm px-4 py-8 rounded-lg">
@@ -65,23 +63,22 @@ const Login = () => {
             <ArrowLeft />
             Back
           </Button>
-          <span className="text-3xl font-semibold">Sign In</span>
+          <span className="text-3xl font-semibold">Email vertification</span>
           <span className="text-sm opacity-50">
-            Please enter your email to sign in
+            Please enter your code that send to your email
           </span>
         </div>
         <div className="flex flex-col gap-4 w-full justify-center items-center">
           <Input
             className="w-3/4 py-6"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={handleEmailChange}
+            type="text"
+            placeholder="Enter your code"
+            onChange={handleCodeChang}
           />
           <Button
-            onClick={() => handleSignIn(email)}
             variant={'default'}
             className="w-3/4 p-4 bg-blue-500 hover:bg-blue-600 hover:cursor-pointer text-white"
+            onClick={() => handleSubmit(code)}
             disabled={isLoading}
           >
             {isLoading ? (
@@ -89,17 +86,17 @@ const Login = () => {
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               </>
             ) : (
-              'Next'
+              'Submit'
             )}
           </Button>
         </div>
         <div className="flex flex-row justify-start items-center w-3/4 self-center mt-2">
-          <span className="text-sm">Don't have an account?</span>
+          <span className="text-sm">Code not received?</span>
           <Button
             className="text-blue-500 px-1 hover:cursor-pointer font-manrope"
             variant="link"
           >
-            Sign up
+            Send again
           </Button>
         </div>
       </div>
@@ -107,4 +104,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Verify;
