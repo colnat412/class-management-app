@@ -6,7 +6,7 @@ export const signInHandler = async (req: Request, res: Response) => {
   try {
     const result = await signIn(email);
     if (result.success) {
-      return res.status(200).json({ message: result.message });
+      return res.status(200).json(result);
     } else {
       return res.status(400).json({ error: 'Failed to send code' });
     }
@@ -21,7 +21,7 @@ export const verifyCodeHandler = async (req: Request, res: Response) => {
   try {
     const result = await verifyCode(email, code);
     if (result.success) {
-      return res.status(200).json({ message: result.message });
+      return res.status(200).json(result);
     } else {
       return res.status(400).json({ error: result.message });
     }

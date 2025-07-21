@@ -1,5 +1,10 @@
 import { Request, Response } from 'express';
-import { addStudent } from '../services/student.service';
+import {
+  addStudent,
+  deleteStudent,
+  getStudentByEmail,
+  getStudents,
+} from '../services/student.service';
 
 export const addStudentHandler = async (req: Request, res: Response) => {
   const { name, email, phone } = req.body;
@@ -12,6 +17,50 @@ export const addStudentHandler = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error('Error in addStudentHandler:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const getStudentsHandler = async (req: Request, res: Response) => {
+  try {
+    const result = await getStudents();
+    if (result.success) {
+      return res.status(200).json(result.data);
+    } else {
+      return res.status(400).json({ error: 'Failed to fetch students' });
+    }
+  } catch (error) {
+    console.error('Error in getStudentsHandler:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const getStudentByEmailHandler = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  try {
+    const result = await getStudentByEmail(email);
+    if (result.success) {
+      return res.status(200).json(result.data);
+    } else {
+      return res.status(404).json({ error: result.message });
+    }
+  } catch (error) {
+    console.error('Error in getStudentByEmailHandler:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const deleteStudentHandler = async (req: Request, res: Response) => {
+  const { email } = req.body;
+  try {
+    const result = await deleteStudent(email);
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(400).json({ error: result.message });
+    }
+  } catch (error) {
+    console.error('Error in deleteStudentHandler:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };

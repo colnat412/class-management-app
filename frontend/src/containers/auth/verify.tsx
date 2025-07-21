@@ -2,9 +2,10 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { getEmailForVerification } from '@/helpers/get-email-verify';
 import { User } from '@/types/user.interface';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -24,7 +25,11 @@ const Verify = () => {
   const handleSubmit = async (code: string) => {
     setIsLoading(true);
     try {
-      const email = localStorage.getItem('email');
+      const email =
+        getEmailForVerification() ||
+        new URLSearchParams(window.location.search).get('email');
+      console.log('Email from localStorage or params:', email);
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`,
         {
@@ -40,8 +45,9 @@ const Verify = () => {
       const userData = data.data as User;
       if (res.ok) {
         toast.success(data.message || 'Code verified successfully');
+        localStorage.removeItem('email');
         if (userData.role === 'student') {
-          router.push('/');
+          router.push('/student');
         } else {
           router.push('/instructor');
         }

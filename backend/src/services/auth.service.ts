@@ -46,8 +46,22 @@ export const verifyCode = async (email: string, code: string) => {
     if (Date.now() > doc.data()?.expiresAt) {
       return { success: false, message: 'Code expired' };
     }
+    await db.collection('users').doc(email).set(
+      {
+        email,
+        status: 'Active',
+        verified: true,
+        createdAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
+    const userLoginRef = await db.collection('users').doc(email).get();
     await db.collection('accessCodes').doc(email).delete();
-    return { success: true, message: 'Code verified successfully' };
+    return {
+      success: true,
+      message: 'Code verified successfully',
+      data: userLoginRef.data(),
+    };
   } catch (error) {
     console.error('Error verifying code:', error);
     return { success: false, message: 'Verification failed' };

@@ -33,12 +33,15 @@ import { Edit, Plus, Search, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AddStudentRequest, User } from '@/types/user.interface';
 import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ConfirmDeleteDialog } from '@/components/confirm-dialog';
 
 const StudentManagement = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [data, setData] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleChangeInput = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -48,20 +51,27 @@ const StudentManagement = () => {
   };
 
   const fetchData = async () => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/student/get-students`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    setIsLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/student/get-students`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const result = await res.json();
+      if (res.ok) {
+        setData(result);
+      } else {
+        console.error('Failed to fetch students:', result.error);
       }
-    );
-    const result = await res.json();
-    if (res.ok) {
-      setData(result);
-    } else {
-      console.error('Failed to fetch students:', result.error);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -96,17 +106,62 @@ const StudentManagement = () => {
     }
   };
 
+  const handleDeleteStudent = async (email: string) => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/student/delete-student`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      }
+    );
+
+    const result = await res.json();
+    console.log('Response from delete student:', result);
+
+    if (res.ok) {
+      toast.success(result.message || 'Student deleted successfully');
+      setData((prev) => prev.filter((student) => student.email !== email));
+    } else {
+      console.error('Failed to delete student:', result.error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
-  }, [data.length]);
+  }, []);
+
+  const SkeletonRow = () => (
+    <TableRow>
+      <TableCell className="font-medium">
+        <Skeleton className="h-4 w-24" />
+      </TableCell>
+      <TableCell className="text-gray-600">
+        <Skeleton className="h-4 w-48" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-6 w-16 rounded-full" />
+      </TableCell>
+      <TableCell width={50} className="flex justify-start items-center gap-2">
+        <Skeleton className="h-8 w-12" />
+        <Skeleton className="h-8 w-16" />
+      </TableCell>
+    </TableRow>
+  );
 
   return (
     <div className="flex flex-col gap-4 h-full w-full p-6">
       <h1 className=" text-2xl">Manage Students</h1>
       <div className="flex items-center justify-between ">
-        <h2 className="text-lg font-medium text-gray-900">
-          {data.length} Students
-        </h2>
+        {isLoading ? (
+          <Skeleton className="h-7 w-28" />
+        ) : (
+          <h2 className="text-lg font-medium text-gray-900">
+            {data.length} Students
+          </h2>
+        )}
         <div className="flex items-center gap-3">
           <Dialog>
             <DialogTrigger asChild>
@@ -115,7 +170,6 @@ const StudentManagement = () => {
                 Add Student
               </Button>
             </DialogTrigger>
-
             <DialogContent className="flex flex-col gap-10 sm:max-w-4xl w-5/6">
               <DialogHeader>
                 <DialogTitle className="flex justify-center items-center text-2xl">
@@ -155,7 +209,7 @@ const StudentManagement = () => {
                   </div>
                   <div className="flex flex-col gap-4 w-full">
                     <Label htmlFor="role-1">Role</Label>
-                    <Select>
+                    <Select defaultValue="student" disabled>
                       <SelectTrigger className="w-full p-6">
                         <SelectValue placeholder="Select a role" />
                       </SelectTrigger>
@@ -209,51 +263,64 @@ const StudentManagement = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 && (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <SkeletonRow key={index} />
+              ))
+            ) : data.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center">
                   No students found.
                 </TableCell>
               </TableRow>
+            ) : (
+              data.map((student) => (
+                <TableRow key={student.id} className="hover:bg-gray-50">
+                  <TableCell className="font-medium">{student.name}</TableCell>
+                  <TableCell className="text-gray-600">
+                    {student.email}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="secondary"
+                      className={`${
+                        student.status === 'Active'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}
+                    >
+                      {student.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell
+                    width={50}
+                    className="flex justify-start items-center gap-2"
+                  >
+                    <Button
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      <Edit className="h-3 w-3 mr-1" />
+                      Edit
+                    </Button>
+                    <ConfirmDeleteDialog
+                      onConfirm={() => handleDeleteStudent(student.email)}
+                      title="Delete Student"
+                      description="Are you sure you want to delete this student? This action cannot be undone."
+                    >
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="bg-red-500 hover:bg-red-600"
+                      >
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        Delete
+                      </Button>
+                    </ConfirmDeleteDialog>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
-            {data.map((student) => (
-              <TableRow key={student.id} className="hover:bg-gray-50">
-                <TableCell className="font-medium">{student.name}</TableCell>
-                <TableCell className="text-gray-600">{student.email}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant="secondary"
-                    className={`${
-                      student.status === 'Active'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
-                  >
-                    {student.status}
-                  </Badge>
-                </TableCell>
-                <TableCell
-                  width={50}
-                  className="flex justify-start items-center gap-2"
-                >
-                  <Button
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    <Edit className="h-3 w-3 mr-1" />
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="bg-red-500 hover:bg-red-600"
-                  >
-                    <Trash2 className="h-3 w-3 mr-1" />
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
           </TableBody>
         </Table>
       </div>
