@@ -20,19 +20,85 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Edit, Plus, Search, Trash2 } from 'lucide-react';
-import { useState } from 'react';
-
-const studentsData = [
-  { id: 1, name: 'Student 1', email: '123@gmail.com', status: 'Active' },
-  { id: 2, name: 'Student 2', email: '123@gmail.com', status: 'Active' },
-  { id: 3, name: 'Student 3', email: '123@gmail.com', status: 'Active' },
-  { id: 4, name: 'Student 4', email: '123@gmail.com', status: 'Active' },
-];
+import { useEffect, useState } from 'react';
+import { AddStudentRequest, User } from '@/types/user.interface';
+import { toast } from 'sonner';
 
 const StudentManagement = () => {
-  const [data, setData] = useState(studentsData);
-  const fetchData = () => {};
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [data, setData] = useState<User[]>([]);
+
+  const handleChangeInput = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    setter(e.target.value);
+  };
+
+  const fetchData = async () => {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/student/get-students`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const result = await res.json();
+    if (res.ok) {
+      setData(result);
+    } else {
+      console.error('Failed to fetch students:', result.error);
+    }
+  };
+
+  const handleAddStudent = async () => {
+    const body: AddStudentRequest = {
+      name,
+      email,
+      phone,
+    };
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/student/add-student`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      }
+    );
+    const result = await res.json();
+    console.log('Response from add student:', result);
+
+    if (res.ok) {
+      toast.success(result.message || 'Student added successfully');
+      setName('');
+      setEmail('');
+      setPhone('');
+      setData((prev) => [...prev, result]);
+    } else {
+      console.error('Failed to add student:', result.error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [data.length]);
 
   return (
     <div className="flex flex-col gap-4 h-full w-full p-6">
@@ -64,6 +130,7 @@ const StudentManagement = () => {
                       className="p-6"
                       id="name-1"
                       placeholder="Student Name"
+                      onChange={(event) => handleChangeInput(event, setName)}
                     />
                   </div>
                   <div className="flex flex-col gap-4 w-full">
@@ -72,6 +139,7 @@ const StudentManagement = () => {
                       className="p-6"
                       id="email-1"
                       placeholder="Email Address"
+                      onChange={(event) => handleChangeInput(event, setEmail)}
                     />
                   </div>
                 </div>
@@ -82,11 +150,23 @@ const StudentManagement = () => {
                       className="p-6"
                       id="phone-1"
                       placeholder="Phone Number"
+                      onChange={(event) => handleChangeInput(event, setPhone)}
                     />
                   </div>
                   <div className="flex flex-col gap-4 w-full">
                     <Label htmlFor="role-1">Role</Label>
-                    <Input className="p-6" id="role-1" placeholder="Role" />
+                    <Select>
+                      <SelectTrigger className="w-full p-6">
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Roles</SelectLabel>
+                          <SelectItem value="student">Student</SelectItem>
+                          <SelectItem value="instructor">Instructor</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 <div className="flex flex-col gap-4 w-full">
@@ -97,6 +177,7 @@ const StudentManagement = () => {
                   <Button
                     type="submit"
                     className="bg-blue-600 text-white hover:bg-blue-700 w-1/5 py-6 text-md"
+                    onClick={handleAddStudent}
                   >
                     Submit
                   </Button>
@@ -128,14 +209,25 @@ const StudentManagement = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {studentsData.map((student) => (
+            {data.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center">
+                  No students found.
+                </TableCell>
+              </TableRow>
+            )}
+            {data.map((student) => (
               <TableRow key={student.id} className="hover:bg-gray-50">
                 <TableCell className="font-medium">{student.name}</TableCell>
                 <TableCell className="text-gray-600">{student.email}</TableCell>
                 <TableCell>
                   <Badge
                     variant="secondary"
-                    className="bg-green-100 text-green-700 hover:bg-green-100"
+                    className={`${
+                      student.status === 'Active'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
                   >
                     {student.status}
                   </Badge>

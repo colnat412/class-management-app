@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { User } from '@/types/user.interface';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -36,13 +37,14 @@ const Verify = () => {
       );
       const data = await res.json();
       console.log('Response from verify:', data);
-      console.log('Response status:', res);
-
+      const userData = data.data as User;
       if (res.ok) {
         toast.success(data.message || 'Code verified successfully');
-        router.push('/');
-      } else {
-        toast.error(data.message || 'Failed to verify code');
+        if (userData.role === 'student') {
+          router.push('/');
+        } else {
+          router.push('/instructor');
+        }
       }
     } catch (error) {
       console.error('Error during code verification:', error);

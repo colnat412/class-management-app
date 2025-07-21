@@ -1,5 +1,6 @@
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Toaster } from 'sonner';
 
 export default function RootLayout({
   children,
@@ -7,14 +8,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="">
-        <SidebarProvider>
-          <AppSidebar />
-          {/* <SidebarTrigger /> */}
-          {children}
-        </SidebarProvider>
-      </body>
-    </html>
+    <body className="">
+      <SidebarProvider>
+        <AppSidebar />
+        {/* <SidebarTrigger /> */}
+        <Toaster richColors position="top-right" />
+        {children}
+      </SidebarProvider>
+    </body>
   );
 }
