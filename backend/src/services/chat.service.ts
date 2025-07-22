@@ -22,10 +22,17 @@ export const saveMessageToFirestore = async (
 };
 
 export const getChatHistory = async (roomId: string) => {
-  const snapshot = await db
-    .collection(`chats/${roomId}/messages`)
-    .orderBy('timestamp')
-    .get();
+  try {
+    const snapshot = await db
+      .collection('chats')
+      .doc(roomId)
+      .collection('messages')
+      .orderBy('timestamp')
+      .get();
 
-  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    return [];
+  }
 };

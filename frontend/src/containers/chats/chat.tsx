@@ -201,9 +201,6 @@ const ChatInterface = () => {
                 <h3 className="font-semibold text-gray-900 text-lg truncate">
                   {selectedUser.name}
                 </h3>
-                <span className="text-sm text-green-500">
-                  {socket?.connected ? 'Online' : 'Offline'}
-                </span>
               </div>
             </div>
 
