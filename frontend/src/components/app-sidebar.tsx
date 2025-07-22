@@ -37,7 +37,7 @@ const instructorNavItems = [
   },
   {
     title: 'Message',
-    url: '/messages',
+    url: '/message',
     icon: MessageSquare,
   },
 ];

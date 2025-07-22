@@ -2,12 +2,10 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import { initSocket } from './socket';
+import { initSocket } from './socket/index'; // Sửa import path
+import app from './app'; // Import app chính với tất cả routes
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
+// Sử dụng app đã có thay vì tạo mới
 const server = http.createServer(app);
 
 const io = new Server(server, {
