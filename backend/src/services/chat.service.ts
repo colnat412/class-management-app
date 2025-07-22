@@ -3,6 +3,7 @@ import { db } from '../firebase/firebase';
 export const saveMessageToFirestore = async (
   roomId: string,
   message: {
+    id: string;
     sender: string;
     receiver: string;
     message: string;
@@ -14,8 +15,9 @@ export const saveMessageToFirestore = async (
       .collection('chats')
       .doc(roomId)
       .collection('messages')
-      .add(message);
-    console.log('Message saved to Firestore');
+      .doc(message.id)
+      .set(message);
+    console.log('Message saved to Firestore:', message.id);
   } catch (error) {
     console.error('Error saving message to Firestore:', error);
   }
@@ -27,10 +29,15 @@ export const getChatHistory = async (roomId: string) => {
       .collection('chats')
       .doc(roomId)
       .collection('messages')
-      .orderBy('timestamp')
+      .orderBy('timestamp', 'asc')
       .get();
 
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const result = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return result;
   } catch (error) {
     console.error('Error fetching chat history:', error);
     return [];

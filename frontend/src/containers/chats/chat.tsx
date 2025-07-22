@@ -51,6 +51,8 @@ const ChatInterface = () => {
   useEffect(() => {
     if (!currentUser?.email || !selectedUser?.email) return;
 
+    setMessages([]);
+
     const newSocket = io('http://localhost:3030', {
       query: {
         senderEmail: currentUser.email,
@@ -63,13 +65,28 @@ const ChatInterface = () => {
         setMessages((prev) => [
           ...prev,
           {
-            id: Date.now().toString(),
+            id: data.id || Date.now().toString(),
             sender: data.sender,
             content: data.message,
             timestamp: new Date(data.timestamp),
           },
         ]);
       }
+    });
+
+    newSocket.on('chatHistory', (history: any[]) => {
+      const formattedHistory = history.map((msg: any) => ({
+        id: msg.id,
+        sender: msg.sender === currentUser.email ? 'You' : msg.sender,
+        content: msg.message,
+        timestamp: new Date(msg.timestamp),
+      }));
+      setMessages(formattedHistory);
+    });
+
+    newSocket.on('connect', () => {
+      console.log('Connected to socket, requesting chat history...');
+      newSocket.emit('requestChatHistory');
     });
 
     setSocket(newSocket);
