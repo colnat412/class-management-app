@@ -8,3 +8,11 @@ export interface AddLessonRequest {
   title?: string;
   description?: string;
 }
+
+export interface LessonResponse {
+  id: string;
+  status: string;
+  assignedAt: string;
+  completedAt?: string;
+  lessonDetails: Lesson;
+}

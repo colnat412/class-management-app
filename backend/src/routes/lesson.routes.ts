@@ -15,5 +15,5 @@ router.post('/add-lesson', addLessonHandler);
 router.put('/update-lesson', updateLessonHandler);
 router.delete('/delete-lesson', deleteLessonHandler);
 router.post('/assign', assignLessonToStudentHandler);
-router.get('/get-assigned-lessons', getAssignedLessonsHandler);
+router.get('/get-assigned-lessons/:studentId', getAssignedLessonsHandler);
 export default router;

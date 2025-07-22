@@ -1,6 +1,35 @@
+'use client';
+
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from 'sonner';
+import { AuthProvider, useAuth } from '@/contexts/auth-context';
+
+const DashboardContent = ({ children }: { children: React.ReactNode }) => {
+  const { role, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <body className="">
+        <SidebarProvider>
+          <div className="w-64 h-screen bg-white border-r animate-pulse" />
+          <Toaster richColors position="top-right" />
+          {children}
+        </SidebarProvider>
+      </body>
+    );
+  }
+
+  return (
+    <body className="">
+      <SidebarProvider>
+        <AppSidebar role={role} />
+        <Toaster richColors position="top-right" />
+        {children}
+      </SidebarProvider>
+    </body>
+  );
+};
 
 export default function RootLayout({
   children,
@@ -8,13 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <body className="">
-      <SidebarProvider>
-        <AppSidebar />
-        {/* <SidebarTrigger /> */}
-        <Toaster richColors position="top-right" />
-        {children}
-      </SidebarProvider>
-    </body>
+    <AuthProvider>
+      <DashboardContent>{children}</DashboardContent>
+    </AuthProvider>
   );
 }

@@ -119,7 +119,20 @@ export const getAssignedLessons = async (studentId: string) => {
       ...doc.data(),
     }));
 
-    return { success: true, data: assignedLessons };
+    if (assignedLessons.length === 0) {
+      return { success: false, error: 'No assigned lessons found' };
+    }
+    const assignedLessonDetails = await Promise.all(
+      assignedLessons.map(async (lesson) => {
+        const lessonSnap = await db.collection('lessons').doc(lesson.id).get();
+        return {
+          ...lesson,
+          lessonDetails: lessonSnap.exists ? lessonSnap.data() : null,
+        };
+      })
+    );
+
+    return { success: true, data: assignedLessonDetails };
   } catch (error) {
     console.error('Error fetching assigned lessons:', error);
     return { success: false, error: 'Could not fetch assigned lessons' };

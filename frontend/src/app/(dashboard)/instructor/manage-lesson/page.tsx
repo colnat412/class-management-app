@@ -1,4 +1,4 @@
-import LessonManagement from '@/containers/dashboard/lesson.management';
+import LessonManagement from '@/containers/dashboard/lesson-management';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const LessonManagementPage = () => {
-  return <LessonManagement />;
+  return <LessonManagement role="instructor" />;
 };
 
 export default LessonManagementPage;

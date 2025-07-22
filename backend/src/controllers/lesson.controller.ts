@@ -89,7 +89,7 @@ export const getAssignedLessonsHandler = async (
   req: Request,
   res: Response
 ) => {
-  const { studentId } = req.body;
+  const { studentId } = req.params;
   try {
     const result = await getAssignedLessons(studentId);
     if (result.success) {

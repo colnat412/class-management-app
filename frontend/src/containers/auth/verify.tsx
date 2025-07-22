@@ -47,7 +47,7 @@ const Verify = () => {
         localStorage.removeItem('email');
         localStorage.setItem('user', JSON.stringify(userData));
         if (userData.role === 'student') {
-          router.push('/student');
+          router.push('/student/manage-lesson');
         } else {
           router.push('/instructor/manage-student');
         }

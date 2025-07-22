@@ -41,7 +41,7 @@ const StudentManagement = () => {
   const [phone, setPhone] = useState<string>('');
   const [user, setUser] = useState<User | null>(null);
   const [data, setData] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Changed to false initially
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);

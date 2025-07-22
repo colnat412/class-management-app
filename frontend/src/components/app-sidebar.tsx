@@ -1,8 +1,15 @@
 'use client';
 
-import type * as React from 'react';
-import { Users, BookOpen, MessageSquare, GraduationCap } from 'lucide-react';
+import React from 'react';
+import {
+  Users,
+  BookOpen,
+  MessageSquare,
+  GraduationCap,
+  LogOut,
+} from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 import {
   Sidebar,
@@ -15,8 +22,9 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { Button } from './ui/button';
 
-const navItems = [
+const instructorNavItems = [
   {
     title: 'Manage Students',
     url: '/instructor/manage-student',
@@ -34,8 +42,32 @@ const navItems = [
   },
 ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+const studentNavItems = [
+  {
+    title: 'My Lessons',
+    url: '/student',
+    icon: BookOpen,
+  },
+  {
+    title: 'Message',
+    url: '/messages',
+    icon: MessageSquare,
+  },
+];
+
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  role?: 'instructor' | 'student';
+}
+
+const AppSidebarComponent = ({
+  role = 'instructor',
+  ...props
+}: AppSidebarProps) => {
   const pathname = usePathname();
+  const navItems = React.useMemo(
+    () => (role === 'instructor' ? instructorNavItems : studentNavItems),
+    [role]
+  );
 
   return (
     <Sidebar {...props}>
@@ -63,21 +95,47 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url}>
-                    <a
+                    <Link
                       href={item.url}
                       className="flex items-center gap-3 px-3 py-2"
                     >
                       <item.icon className="size-4" />
                       <span className="text-md">{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {/* Sign out button at the bottom */}
+        <div className="mt-auto px-3 pb-4">
+          <SidebarMenu>
+            <SidebarMenuItem className="flex justify-center items-center">
+              <SidebarMenuButton asChild>
+                <Button
+                  type="button"
+                  className="flex w-3/4 items-center justify-center gap-3 p-2 hover:cursor-pointer hover:bg-black hover:text-white"
+                  onClick={() => {}}
+                >
+                  <LogOut />
+                  <span className="text-md">Sign out</span>
+                </Button>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </div>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
   );
-}
+};
+
+// Memoize component để tránh re-render không cần thiết
+export const AppSidebar = React.memo(
+  AppSidebarComponent,
+  (prevProps, nextProps) => {
+    // Chỉ re-render khi role thay đổi
+    return prevProps.role === nextProps.role;
+  }
+);
