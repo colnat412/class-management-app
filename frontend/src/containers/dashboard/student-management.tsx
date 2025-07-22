@@ -1,25 +1,17 @@
 'use client';
 
+import { ConfirmDeleteDialog } from '@/components/confirm-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import {
   Select,
   SelectContent,
@@ -29,19 +21,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Edit, Plus, Search, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { AddStudentRequest, User } from '@/types/user.interface';
-import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ConfirmDeleteDialog } from '@/components/confirm-dialog';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { AddStudentRequest, User } from '@/types/user.interface';
+import { Edit, Loader2, Plus, Search, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 const StudentManagement = () => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
+  const [user, setUser] = useState<User | null>(null);
   const [data, setData] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const handleChangeInput = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -76,57 +79,160 @@ const StudentManagement = () => {
   };
 
   const handleAddStudent = async () => {
-    const body: AddStudentRequest = {
-      name,
-      email,
-      phone,
-    };
+    setIsSaving(true);
+    try {
+      const body: AddStudentRequest = {
+        name,
+        email,
+        phone,
+      };
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/student/add-student`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/student/add-student`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        }
+      );
+      const result = await res.json();
+
+      if (res.ok) {
+        toast.success(result.message || 'Student added successfully');
+        setData((prev) => [
+          ...prev,
+          {
+            ...body,
+            id: result.id,
+            status: 'Inactive',
+            role: 'student',
+            createdAt: new Date().toISOString(),
+            verified: false,
+          } as User,
+        ]);
+        handleCloseDialog();
+      } else {
+        console.error('Failed to add student:', result.error);
+        toast.error(result.error || 'Failed to add student');
       }
-    );
-    const result = await res.json();
-    console.log('Response from add student:', result);
+    } catch (error) {
+      console.error('Error adding student:', error);
+      toast.error('An unexpected error occurred while adding student');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
-    if (res.ok) {
-      toast.success(result.message || 'Student added successfully');
-      setName('');
-      setEmail('');
-      setPhone('');
-      setData((prev) => [...prev, result]);
+  const handleUpdateStudent = async () => {
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      const body = {
+        id: user.id,
+        name,
+        email,
+        phone,
+      };
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/student/update-student`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        }
+      );
+      const result = await res.json();
+
+      if (res.ok) {
+        toast.success(result.message || 'Student updated successfully');
+        setData((prev) =>
+          prev.map((student) =>
+            student.id === user.id
+              ? { ...student, name, email, phone }
+              : student
+          )
+        );
+        handleCloseDialog();
+      } else {
+        console.error('Failed to update student:', result.error);
+        toast.error(result.error || 'Failed to update student');
+      }
+    } catch (error) {
+      console.error('Error updating student:', error);
+      toast.error('An unexpected error occurred while updating student');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (isEditing) {
+      handleUpdateStudent();
     } else {
-      console.error('Failed to add student:', result.error);
+      handleAddStudent();
     }
   };
 
   const handleDeleteStudent = async (email: string) => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/student/delete-student`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/student/delete-student`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const result = await res.json();
+      console.log('Response from delete student:', result);
+
+      if (res.ok) {
+        toast.success(result.message || 'Student deleted successfully');
+        setData((prev) => prev.filter((student) => student.email !== email));
+      } else {
+        console.error('Failed to delete student:', result.error);
+        toast.error(result.error || 'Failed to delete student');
       }
-    );
-
-    const result = await res.json();
-    console.log('Response from delete student:', result);
-
-    if (res.ok) {
-      toast.success(result.message || 'Student deleted successfully');
-      setData((prev) => prev.filter((student) => student.email !== email));
-    } else {
-      console.error('Failed to delete student:', result.error);
+    } catch (error) {
+      console.error('Error deleting student:', error);
+      toast.error('An unexpected error occurred while deleting student');
     }
+  };
+
+  const handleEditStudent = (student: User) => {
+    setUser(student);
+    setName(student.name);
+    setEmail(student.email);
+    setPhone(student.phone || '');
+    setIsEditing(true);
+    setIsDialogOpen(true);
+  };
+
+  const handleOpenAddStudentDialog = () => {
+    setUser(null);
+    setName('');
+    setEmail('');
+    setPhone('');
+    setIsEditing(false);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setUser(null);
+    setName('');
+    setEmail('');
+    setPhone('');
+    setIsEditing(false);
+    setIsSaving(false);
   };
 
   useEffect(() => {
@@ -163,9 +269,12 @@ const StudentManagement = () => {
           </h2>
         )}
         <div className="flex items-center gap-3">
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white">
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white"
+                onClick={handleOpenAddStudentDialog}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Student
               </Button>
@@ -173,7 +282,7 @@ const StudentManagement = () => {
             <DialogContent className="flex flex-col gap-10 sm:max-w-4xl w-5/6">
               <DialogHeader>
                 <DialogTitle className="flex justify-center items-center text-2xl">
-                  Create Student
+                  {user ? 'Edit Student' : 'Create Student'}
                 </DialogTitle>
               </DialogHeader>
               <form className="flex flex-col gap-6">
@@ -184,6 +293,7 @@ const StudentManagement = () => {
                       className="p-6"
                       id="name-1"
                       placeholder="Student Name"
+                      value={name}
                       onChange={(event) => handleChangeInput(event, setName)}
                     />
                   </div>
@@ -193,6 +303,7 @@ const StudentManagement = () => {
                       className="p-6"
                       id="email-1"
                       placeholder="Email Address"
+                      value={email}
                       onChange={(event) => handleChangeInput(event, setEmail)}
                     />
                   </div>
@@ -204,6 +315,7 @@ const StudentManagement = () => {
                       className="p-6"
                       id="phone-1"
                       placeholder="Phone Number"
+                      value={phone}
                       onChange={(event) => handleChangeInput(event, setPhone)}
                     />
                   </div>
@@ -229,11 +341,15 @@ const StudentManagement = () => {
                 </div>
                 <div className="flex justify-end">
                   <Button
-                    type="submit"
-                    className="bg-blue-600 text-white hover:bg-blue-700 w-1/5 py-6 text-md"
-                    onClick={handleAddStudent}
+                    type="button"
+                    className="bg-blue-600 text-white hover:bg-blue-700 w-1/5 py-6 text-md hover:cursor-pointer"
+                    onClick={handleSubmit}
+                    disabled={isSaving}
                   >
-                    Submit
+                    {isSaving && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    {isSaving ? '' : 'Save'}
                   </Button>
                 </div>
               </form>
@@ -299,6 +415,7 @@ const StudentManagement = () => {
                     <Button
                       size="sm"
                       className="bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={() => handleEditStudent(student)}
                     >
                       <Edit className="h-3 w-3 mr-1" />
                       Edit

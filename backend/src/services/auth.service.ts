@@ -34,33 +34,49 @@ export const signIn = async (email: string) => {
 };
 
 export const verifyCode = async (email: string, code: string) => {
-  const doc = await db.collection('accessCodes').doc(email).get();
-
+  const accessCodeDoc = await db.collection('accessCodes').doc(email).get();
   try {
-    if (!doc.exists) {
+    if (!accessCodeDoc.exists) {
       throw new Error('No code found for this email');
     }
-    if (doc.data()?.code !== code) {
+    if (accessCodeDoc.data()?.code !== code) {
       return { success: false, message: 'Invalid code' };
     }
-    if (Date.now() > doc.data()?.expiresAt) {
+    if (Date.now() > accessCodeDoc.data()?.expiresAt) {
       return { success: false, message: 'Code expired' };
     }
-    await db.collection('users').doc(email).set(
-      {
+
+    const usersRef = db.collection('users');
+    const userQuery = await usersRef.where('email', '==', email).get();
+
+    let userData;
+    if (!userQuery.empty) {
+      const userDoc = userQuery.docs[0];
+      await userDoc.ref.update({ verified: true });
+      userData = (await userDoc.ref.get()).data();
+    } else {
+      const uuid = crypto.randomUUID();
+      const newUserRef = usersRef.doc();
+      await newUserRef.set({
+        id: uuid,
+        name: 'Unknown',
         email,
+        phone: '',
+        address: '',
+        role: 'student',
         status: 'Active',
-        verified: true,
+        lessons: [],
         createdAt: new Date().toISOString(),
-      },
-      { merge: true }
-    );
-    const userLoginRef = await db.collection('users').doc(email).get();
+        verified: true,
+      });
+      userData = (await newUserRef.get()).data();
+    }
+
     await db.collection('accessCodes').doc(email).delete();
     return {
       success: true,
       message: 'Code verified successfully',
-      data: userLoginRef.data(),
+      data: userData,
     };
   } catch (error) {
     console.error('Error verifying code:', error);

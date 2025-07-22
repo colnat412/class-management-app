@@ -4,6 +4,7 @@ import {
   deleteStudent,
   getStudentByEmail,
   getStudents,
+  updateStudent,
 } from '../services/student.service';
 
 export const addStudentHandler = async (req: Request, res: Response) => {
@@ -46,6 +47,21 @@ export const getStudentByEmailHandler = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error('Error in getStudentByEmailHandler:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const updateStudentHandler = async (req: Request, res: Response) => {
+  const { id, email, name, phone } = req.body;
+  try {
+    const result = await updateStudent(id, email, name, phone);
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(400).json({ error: result.message });
+    }
+  } catch (error) {
+    console.error('Error in updateStudentHandler:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };

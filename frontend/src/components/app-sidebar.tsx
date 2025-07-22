@@ -19,12 +19,12 @@ import {
 const navItems = [
   {
     title: 'Manage Students',
-    url: '/instructor',
+    url: '/instructor/manage-student',
     icon: Users,
   },
   {
     title: 'Manage Lessons',
-    url: '/student',
+    url: '/instructor/manage-lesson',
     icon: BookOpen,
   },
   {

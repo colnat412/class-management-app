@@ -28,7 +28,6 @@ const Verify = () => {
       const email =
         getEmailForVerification() ||
         new URLSearchParams(window.location.search).get('email');
-      console.log('Email from localStorage or params:', email);
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`,
@@ -46,10 +45,11 @@ const Verify = () => {
       if (res.ok) {
         toast.success(data.message || 'Code verified successfully');
         localStorage.removeItem('email');
+        localStorage.setItem('user', JSON.stringify(userData));
         if (userData.role === 'student') {
           router.push('/student');
         } else {
-          router.push('/instructor');
+          router.push('/instructor/manage-student');
         }
       }
     } catch (error) {

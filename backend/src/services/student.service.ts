@@ -8,7 +8,8 @@ export const addStudent = async (
   phone: string
 ) => {
   try {
-    const studentRef = db.collection('users').doc(email);
+    const uuid = crypto.randomUUID();
+    const studentRef = db.collection('users').doc(uuid);
     const studentDoc = await studentRef.get();
 
     if (studentDoc.exists) {
@@ -16,6 +17,7 @@ export const addStudent = async (
     }
     const code = generateOTP();
     await studentRef.set({
+      id: uuid,
       name,
       email,
       phone,
@@ -48,7 +50,7 @@ export const addStudent = async (
 
     await db
       .collection('accessCodes')
-      .doc(email)
+      .doc(uuid)
       .set({
         code,
         expiresAt: Date.now() + 5 * 60 * 1000,
@@ -64,7 +66,10 @@ export const addStudent = async (
 
 export const getStudents = async () => {
   try {
-    const snapshot = await db.collection('users').get();
+    const snapshot = await db
+      .collection('users')
+      .where('role', '==', 'student')
+      .get();
     const students = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -87,6 +92,33 @@ export const getStudentByEmail = async (email: string) => {
   } catch (error) {
     console.error('Error fetching student by email:', error);
     return { success: false, message: 'Failed to fetch student' };
+  }
+};
+
+export const updateStudent = async (
+  id: string,
+  email: string,
+  name: string,
+  phone: string
+) => {
+  try {
+    const studentRef = db.collection('users').doc(id);
+    const studentDoc = await studentRef.get();
+
+    if (!studentDoc.exists) {
+      return { success: false, message: 'Student not found' };
+    }
+
+    await studentRef.update({
+      email,
+      name,
+      phone,
+    });
+
+    return { success: true, message: 'Student updated successfully' };
+  } catch (error) {
+    console.error('Error updating student:', error);
+    return { success: false, message: 'Failed to update student' };
   }
 };
 

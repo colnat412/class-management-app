@@ -4,6 +4,7 @@ const db = getFirestore();
 
 const users = [
   {
+    id: crypto.randomUUID(),
     name: 'Nguyen Tan Loc',
     email: 'nguyentanloc041203@gmail.com',
     phone: '+84362447457',
@@ -12,6 +13,7 @@ const users = [
     verified: false,
   },
   {
+    id: crypto.randomUUID(),
     name: 'Phung Anh Minh',
     email: 'phunganhminh@gmail.com',
     phone: '+84903334444',
@@ -33,7 +35,7 @@ export async function seedUsersIfEmpty() {
   const timestamp = new Date().toISOString();
 
   users.forEach((user) => {
-    const docRef = db.collection('users').doc(user.email);
+    const docRef = db.collection('users').doc(user.id);
     batch.set(docRef, {
       ...user,
       createdAt: timestamp,
