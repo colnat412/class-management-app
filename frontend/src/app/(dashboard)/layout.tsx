@@ -4,6 +4,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from '@/contexts/auth-context';
+import TopBar from '@/components/top-bar';
 
 const DashboardContent = ({ children }: { children: React.ReactNode }) => {
   const { role, isLoading } = useAuth();
@@ -38,6 +39,7 @@ export default function RootLayout({
 }>) {
   return (
     <AuthProvider>
+      <TopBar />
       <DashboardContent>{children}</DashboardContent>
     </AuthProvider>
   );

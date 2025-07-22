@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Introduction to Programming",
+    "description": "Get started with programming using Python and basic concepts."
+  },
+  {
+    "title": "Frontend Web Development",
+    "description": "Learn HTML, CSS, and JavaScript to build responsive websites."
+  },
+  {
+    "title": "Backend Development with Node.js",
+    "description": "Build server-side applications using Node.js and Express."
+  },
+  {
+    "title": "Databases and SQL",
+    "description": "Learn how to model databases and use SQL for data operations."
+  },
+  {
+    "title": "RESTful APIs Design",
+    "description": "Design and build RESTful APIs for modern web applications."
+  },
+  {
+    "title": "Git and Version Control",
+    "description": "Master Git for code collaboration and version management."
+  },
+  {
+    "title": "Object-Oriented Programming",
+    "description": "Understand OOP concepts and how to apply them in software design."
+  },
+  {
+    "title": "Data Structures and Algorithms",
+    "description": "Improve problem-solving skills through key data structures and algorithms."
+  },
+  {
+    "title": "DevOps Fundamentals",
+    "description": "Introduction to CI/CD, Docker, and infrastructure as code."
+  },
+  {
+    "title": "Agile Project Management",
+    "description": "Learn how Agile and Scrum work in real-world software projects."
+  },
+  {
+    "title": "Cloud Computing Basics",
+    "description": "Understand the fundamentals of cloud computing using AWS and GCP."
+  },
+  {
+    "title": "Cybersecurity Essentials",
+    "description": "Learn basic cybersecurity principles and best practices."
+  },
+  {
+    "title": "Mobile App Development",
+    "description": "Build mobile apps using Flutter and React Native."
+  },
+  {
+    "title": "Software Testing",
+    "description": "Understand unit testing, integration testing, and test automation."
+  },
+  {
+    "title": "Introduction to Machine Learning",
+    "description": "Discover ML concepts and tools to build intelligent systems."
+  }
+]

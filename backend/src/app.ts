@@ -7,36 +7,19 @@ import lessonRoutes from './routes/lesson.routes';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './swagger/option';
-import { initializeFirebase } from './firebase/init';
-import { seedUsersIfEmpty } from './seeds/seed-users';
-import { seedLessonsIfEmpty } from './seeds/seed.lessons';
 
 dotenv.config();
 
-async function startServer() {
-  initializeFirebase();
+const app = express();
 
-  await seedUsersIfEmpty();
-  await seedLessonsIfEmpty();
+app.use(cors());
+app.use(express.json());
 
-  const app = express();
+const specs = swaggerJSDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-  app.use(cors());
-  app.use(express.json());
+app.use('/api/auth', authRoutes);
+app.use('/api/student', studentRoutes);
+app.use('/api/lesson', lessonRoutes);
 
-  const specs = swaggerJSDoc(swaggerOptions);
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-
-  app.use('/api/auth', authRoutes);
-  app.use('/api/student', studentRoutes);
-  app.use('/api/lesson', lessonRoutes);
-
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-  });
-}
-
-startServer().catch((err) => {
-  console.error('❌ Error starting server:', err);
-});
+export default app;

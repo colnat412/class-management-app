@@ -1,27 +1,14 @@
 import { getFirestore } from 'firebase-admin/firestore';
+import * as fs from 'fs';
+import { User } from '../types/user.type';
 
 const db = getFirestore();
 
-const users = [
-  {
-    id: crypto.randomUUID(),
-    name: 'Nguyen Tan Loc',
-    email: 'nguyentanloc041203@gmail.com',
-    phone: '+84362447457',
-    role: 'instructor',
-    status: 'Inactive',
-    verified: false,
-  },
-  {
-    id: crypto.randomUUID(),
-    name: 'Phung Anh Minh',
-    email: 'phunganhminh@gmail.com',
-    phone: '+84903334444',
-    role: 'student',
-    status: 'Inactive',
-    verified: false,
-  },
-];
+import * as path from 'path';
+import { randomUUID } from 'crypto';
+
+const usersPath = path.resolve(__dirname, '../data/users.json');
+const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
 
 export async function seedUsersIfEmpty() {
   const snapshot = await db.collection('users').limit(1).get();
@@ -34,10 +21,12 @@ export async function seedUsersIfEmpty() {
   const batch = db.batch();
   const timestamp = new Date().toISOString();
 
-  users.forEach((user) => {
-    const docRef = db.collection('users').doc(user.id);
+  users.forEach((user: User) => {
+    const id = randomUUID();
+    const docRef = db.collection('users').doc(id);
     batch.set(docRef, {
       ...user,
+      id,
       createdAt: timestamp,
     });
   });

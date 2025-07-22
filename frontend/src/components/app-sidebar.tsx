@@ -108,7 +108,6 @@ const AppSidebarComponent = ({
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        {/* Sign out button at the bottom */}
         <div className="mt-auto px-3 pb-4">
           <SidebarMenu>
             <SidebarMenuItem className="flex justify-center items-center">
@@ -131,11 +130,9 @@ const AppSidebarComponent = ({
   );
 };
 
-// Memoize component để tránh re-render không cần thiết
 export const AppSidebar = React.memo(
   AppSidebarComponent,
   (prevProps, nextProps) => {
-    // Chỉ re-render khi role thay đổi
     return prevProps.role === nextProps.role;
   }
 );
