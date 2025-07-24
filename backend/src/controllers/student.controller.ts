@@ -4,6 +4,7 @@ import {
   deleteStudent,
   getStudentByEmail,
   getStudents,
+  searchStudents,
   updateStudent,
 } from '../services/student.service';
 
@@ -77,6 +78,21 @@ export const deleteStudentHandler = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error('Error in deleteStudentHandler:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const searchStudentsHandler = async (req: Request, res: Response) => {
+  const { query } = req.query;
+  try {
+    const result = await searchStudents(query as string);
+    if (result.success) {
+      return res.status(200).json(result.data);
+    } else {
+      return res.status(400).json({ error: 'Failed to search students' });
+    }
+  } catch (error) {
+    console.error('Error in searchStudentsHandler:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };

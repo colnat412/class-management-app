@@ -2,7 +2,6 @@
 
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from '@/contexts/auth-context';
 import TopBar from '@/components/top-bar';
 
@@ -11,24 +10,22 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
 
   if (isLoading) {
     return (
-      <body className="">
-        <SidebarProvider>
-          <div className="w-64 h-screen bg-white border-r animate-pulse" />
-          <Toaster richColors position="top-right" />
-          {children}
-        </SidebarProvider>
-      </body>
+      <SidebarProvider>
+        <div className="flex h-full">
+          <div className="w-64 h-full bg-white border-r animate-pulse" />
+          <main className="flex-grow overflow-auto">{children}</main>
+        </div>
+      </SidebarProvider>
     );
   }
 
   return (
-    <body className="">
-      <SidebarProvider>
+    <SidebarProvider>
+      <div className="flex h-full w-full">
         <AppSidebar role={role} />
-        <Toaster richColors position="top-right" />
-        {children}
-      </SidebarProvider>
-    </body>
+        <main className="flex-grow overflow-auto">{children}</main>
+      </div>
+    </SidebarProvider>
   );
 };
 
@@ -39,8 +36,12 @@ export default function RootLayout({
 }>) {
   return (
     <AuthProvider>
-      <TopBar />
-      <DashboardContent>{children}</DashboardContent>
+      <div className="h-screen flex flex-col">
+        <TopBar />
+        <div className="flex-grow overflow-hidden">
+          <DashboardContent>{children}</DashboardContent>
+        </div>
+      </div>
     </AuthProvider>
   );
 }

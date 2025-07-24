@@ -119,7 +119,6 @@ const LessonManagement = ({ role }: LessonManagementProps) => {
         }
       );
       const result = await res.json();
-      console.log('Fetched assigned lessons:', result);
 
       if (res.ok) {
         setData(result.map((item: LessonResponse) => item.lessonDetails));
@@ -341,8 +340,8 @@ const LessonManagement = ({ role }: LessonManagementProps) => {
   }, [role]);
 
   const SkeletonRow = () => (
-    <TableRow>
-      <TableCell className="font-medium max-w-26">
+    <TableRow className="w-full">
+      <TableCell className="font-medium max-w-26 w-full">
         <Skeleton className="h-4 w-24" />
       </TableCell>
       <TableCell className="text-gray-600 max-w-40 truncate">
@@ -368,7 +367,7 @@ const LessonManagement = ({ role }: LessonManagementProps) => {
       <h1 className=" text-2xl">
         {role === 'instructor' ? 'Manage Lessons' : 'View Lessons'}
       </h1>
-      <div className="flex items-center justify-between ">
+      <div className="flex items-center justify-between w-full">
         {isLoading ? (
           <Skeleton className="h-7 w-28" />
         ) : (
@@ -376,7 +375,7 @@ const LessonManagement = ({ role }: LessonManagementProps) => {
             {data.length} Lesson{data.length !== 1 ? 's' : ''}
           </h2>
         )}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full">
           {role === 'instructor' && (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>

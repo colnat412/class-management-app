@@ -40,17 +40,9 @@ const Verify = () => {
         }
       );
       const data = await res.json();
-      console.log('Response from verify:', data);
-      const userData = data.data as User;
       if (res.ok) {
         toast.success(data.message || 'Code verified successfully');
-        localStorage.removeItem('email');
-        localStorage.setItem('user', JSON.stringify(userData));
-        if (userData.role === 'student') {
-          router.push('/student/manage-lesson');
-        } else {
-          router.push('/instructor/manage-student');
-        }
+        router.push('/password');
       }
     } catch (error) {
       console.error('Error during code verification:', error);
@@ -94,7 +86,7 @@ const Verify = () => {
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               </>
             ) : (
-              'Submit'
+              'Next'
             )}
           </Button>
         </div>

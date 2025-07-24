@@ -13,10 +13,10 @@ const users = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
 export async function seedUsersIfEmpty() {
   const snapshot = await db.collection('users').limit(1).get();
 
-  if (!snapshot.empty) {
-    console.log('Users already seeded. Skipping...');
-    return;
-  }
+  // if (!snapshot.empty) {
+  //   console.log('Users already seeded. Skipping...');
+  //   return;
+  // }
 
   const batch = db.batch();
   const timestamp = new Date().toISOString();

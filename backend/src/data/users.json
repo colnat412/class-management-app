@@ -1,98 +1,10 @@
 [
   {
     "name": "Alice Johnson",
-    "email": "alice.johnson@example.com",
-    "phone": "+14081234567",
+    "email": "nguyentanloc041203@gmail.com",
+    "phone": "+84362447457",
     "role": "instructor",
     "status": "Active",
-    "verified": false
-  },
-  {
-    "name": "Michael Smith",
-    "email": "michael.smith@example.com",
-    "phone": "+14085556677",
-    "role": "instructor",
-    "status": "Inactive",
-    "verified": false
-  },
-  {
-    "name": "Emma Brown",
-    "email": "emma.brown@example.com",
-    "phone": "+14089998888",
-    "role": "student",
-    "status": "Inactive",
-    "verified": false
-  },
-  {
-    "name": "David Wilson",
-    "email": "david.wilson@example.com",
-    "phone": "+14082223333",
-    "role": "student",
-    "status": "Active",
-    "verified": false
-  },
-  {
-    "name": "Sophia Davis",
-    "email": "sophia.davis@example.com",
-    "phone": "+14087775555",
-    "role": "student",
-    "status": "Active",
-    "verified": false
-  },
-  {
-    "name": "Daniel Miller",
-    "email": "daniel.miller@example.com",
-    "phone": "+14081112222",
-    "role": "student",
-    "status": "Inactive",
-    "verified": false
-  },
-  {
-    "name": "Olivia Martinez",
-    "email": "olivia.martinez@example.com",
-    "phone": "+14083334444",
-    "role": "student",
-    "status": "Inactive",
-    "verified": false
-  },
-  {
-    "name": "James Anderson",
-    "email": "james.anderson@example.com",
-    "phone": "+14086667777",
-    "role": "student",
-    "status": "Active",
-    "verified": false
-  },
-  {
-    "name": "William Taylor",
-    "email": "william.taylor@example.com",
-    "phone": "+14089991111",
-    "role": "student",
-    "status": "Inactive",
-    "verified": false
-  },
-  {
-    "name": "Mia Harris",
-    "email": "mia.harris@example.com",
-    "phone": "+14081114444",
-    "role": "student",
-    "status": "Active",
-    "verified": false
-  },
-  {
-    "name": "Ethan Clark",
-    "email": "ethan.clark@example.com",
-    "phone": "+14082224444",
-    "role": "student",
-    "status": "Active",
-    "verified": false
-  },
-  {
-    "name": "Ava Lewis",
-    "email": "ava.lewis@example.com",
-    "phone": "+14085557777",
-    "role": "student",
-    "status": "Inactive",
     "verified": false
   },
   {

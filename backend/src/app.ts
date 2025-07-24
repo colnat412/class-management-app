@@ -8,6 +8,8 @@ import chatRoutes from './routes/chat.routes';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from './swagger/option';
+import { seedUsersIfEmpty } from './seeds/seed-users';
+import { seedLessonsIfEmpty } from './seeds/seed.lessons';
 
 dotenv.config();
 

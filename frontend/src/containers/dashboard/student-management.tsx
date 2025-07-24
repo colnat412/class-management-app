@@ -45,6 +45,7 @@ const StudentManagement = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleChangeInput = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -62,6 +63,7 @@ const StudentManagement = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
@@ -358,7 +360,11 @@ const StudentManagement = () => {
 
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input placeholder="Filter" className="pl-10 w-40" />
+            <Input
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Filter"
+              className="pl-10"
+            />
           </div>
         </div>
       </div>

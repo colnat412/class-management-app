@@ -1,4 +1,5 @@
 import { db } from '../firebase/firebase';
+import { User } from '../types/user.type';
 import { generateOTP } from '../utils/generateCode';
 import { sendEmailCode } from './email';
 
@@ -129,5 +130,29 @@ export const deleteStudent = async (email: string) => {
   } catch (error) {
     console.error('Error deleting student:', error);
     return { success: false, message: 'Failed to delete student' };
+  }
+};
+
+export const searchStudents = async (query: string) => {
+  try {
+    const snapshot = await db
+      .collection('users')
+      .where('role', '==', 'student')
+      .get();
+    const students = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as User[];
+
+    const filteredStudents = students.filter(
+      (student) =>
+        student.name.toLowerCase().includes(query.toLowerCase()) ||
+        student.email.toLowerCase().includes(query.toLowerCase())
+    );
+
+    return { success: true, data: filteredStudents };
+  } catch (error) {
+    console.error('Error searching students:', error);
+    return { success: false, data: [] };
   }
 };

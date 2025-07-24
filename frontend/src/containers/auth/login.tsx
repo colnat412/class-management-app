@@ -22,10 +22,11 @@ const Login = () => {
   const handleBack = () => {
     router.back();
   };
+
   const handleSignIn = async (email: string) => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${API_URL}/auth/signIn`, {
+      const res = await fetch(`${API_URL}/auth/sign-in-otp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,11 +35,16 @@ const Login = () => {
       });
 
       const data = await res.json();
+      console.log('Response from server:', data.user.verified);
 
       if (res.ok) {
         localStorage.setItem('email', email);
-        toast.success(data.message || 'Code sent to your email');
-        router.push('/verify');
+        if (!data.user.verified) {
+          toast.success(data.message || 'Code sent to your email');
+          router.push('/verify');
+        } else {
+          router.push('/password');
+        }
       } else {
         toast.error(data.error || 'Failed to send code');
         console.error('Sign in failed:', data.message || 'Unknown error');
