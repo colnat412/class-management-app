@@ -195,7 +195,6 @@ const StudentManagement = () => {
       );
 
       const result = await res.json();
-      console.log('Response from delete student:', result);
 
       if (res.ok) {
         toast.success(result.message || 'Student deleted successfully');
@@ -262,7 +261,7 @@ const StudentManagement = () => {
   return (
     <div className="flex flex-col gap-4 h-full w-full p-6">
       <h1 className=" text-2xl">Manage Students</h1>
-      <div className="flex items-center justify-between ">
+      <div className="flex items-center justify-between w-full">
         {isLoading ? (
           <Skeleton className="h-7 w-28" />
         ) : (

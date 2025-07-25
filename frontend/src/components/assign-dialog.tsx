@@ -75,7 +75,6 @@ export function AssignDialog({
 
   const handleAssign = () => {
     onAssign(selectedStudents);
-    console.log('Assigning to students:', selectedStudents);
 
     setSelectedStudents([]);
     setIsOpen(false);

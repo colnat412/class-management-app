@@ -6,8 +6,6 @@ import {
 
 export const initSocket = (io: Server) => {
   io.on('connection', (socket: Socket) => {
-    console.log('User connected:', socket.id);
-
     const { senderEmail, receiverEmail } = socket.handshake.query;
 
     if (!senderEmail || !receiverEmail) {
@@ -17,8 +15,6 @@ export const initSocket = (io: Server) => {
 
     const roomId = getRoomId(senderEmail as string, receiverEmail as string);
     socket.join(roomId);
-
-    console.log(`User ${senderEmail} joined room: ${roomId}`);
 
     socket.on('requestChatHistory', async () => {
       try {
@@ -43,7 +39,6 @@ export const initSocket = (io: Server) => {
     });
 
     socket.on('disconnect', () => {
-      console.log('User disconnected:', socket.id);
       socket.leave(roomId);
     });
   });
@@ -51,6 +46,5 @@ export const initSocket = (io: Server) => {
 
 function getRoomId(a: string, b: string) {
   const roomId = [a, b].sort().join('__');
-  console.log(`Generated roomId: ${roomId} from emails: ${a}, ${b}`);
   return roomId;
 }

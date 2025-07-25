@@ -285,8 +285,6 @@ const LessonManagement = ({ role }: LessonManagementProps) => {
     lessonId: string,
     studentIds: string[]
   ) => {
-    console.log('Assigning lesson to students:', { lessonId, studentIds });
-
     setIsSaving(true);
     try {
       const body = {
@@ -375,7 +373,7 @@ const LessonManagement = ({ role }: LessonManagementProps) => {
             {data.length} Lesson{data.length !== 1 ? 's' : ''}
           </h2>
         )}
-        <div className="flex items-center gap-3 w-full">
+        <div className="flex items-center gap-3">
           {role === 'instructor' && (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>

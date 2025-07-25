@@ -67,8 +67,6 @@ export const assignLessonToStudent = async (data: AssignLessonRequest) => {
   try {
     const { lessonId, studentIds } = data;
 
-    console.log('Assign lesson data:', { lessonId, studentIds });
-
     if (!lessonId || !studentIds || !Array.isArray(studentIds)) {
       return { success: false, error: 'Invalid lesson ID or student IDs' };
     }

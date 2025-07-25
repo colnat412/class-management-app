@@ -69,6 +69,11 @@ const AppSidebarComponent = ({
     [role]
   );
 
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  };
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -115,7 +120,7 @@ const AppSidebarComponent = ({
                 <Button
                   type="button"
                   className="flex w-3/4 items-center justify-center gap-3 p-2 hover:cursor-pointer hover:bg-black hover:text-white"
-                  onClick={() => {}}
+                  onClick={handleSignOut}
                 >
                   <LogOut />
                   <span className="text-md">Sign out</span>
