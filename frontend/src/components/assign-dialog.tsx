@@ -10,9 +10,9 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-import { useState, useEffect } from 'react';
-import { User } from '@/types/user.interface';
 import { Skeleton } from '@/components/ui/skeleton';
+import { User } from '@/types/user.interface';
+import { useState } from 'react';
 import { Checkbox } from './ui/checkbox';
 
 export function AssignDialog({

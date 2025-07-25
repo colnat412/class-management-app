@@ -3,9 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getEmailForVerification } from '@/helpers/get-email-verify';
-import { User } from '@/types/user.interface';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 

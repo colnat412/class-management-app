@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ChatMessageRequest } from '@/types/socket.interface';
+import { User as IUser } from '@/types/user.interface';
 import { Send, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
@@ -35,7 +37,7 @@ const ChatInterface = () => {
 
   const [socket, setSocket] = useState<Socket | null>(null);
 
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<IUser | null>(null);
 
   useEffect(() => {
     try {
@@ -60,7 +62,7 @@ const ChatInterface = () => {
       },
     });
 
-    newSocket.on('chatMessage', (data: any) => {
+    newSocket.on('chatMessage', (data: ChatMessageRequest) => {
       if (data.sender !== currentUser.email) {
         setMessages((prev) => [
           ...prev,
@@ -74,7 +76,7 @@ const ChatInterface = () => {
       }
     });
 
-    newSocket.on('chatHistory', (history: any[]) => {
+    newSocket.on('chatHistory', (history: ChatMessageRequest[]) => {
       const formattedHistory = history.map((msg: any) => ({
         id: msg.id,
         sender: msg.sender === currentUser.email ? 'You' : msg.sender,

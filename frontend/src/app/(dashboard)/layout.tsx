@@ -1,9 +1,9 @@
 'use client';
 
 import { AppSidebar } from '@/components/app-sidebar';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AuthProvider, useAuth } from '@/contexts/auth-context';
 import TopBar from '@/components/top-bar';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AuthProvider, useAuth } from '@/contexts/auth-context';
 
 const DashboardContent = ({ children }: { children: React.ReactNode }) => {
   const { role, isLoading } = useAuth();
