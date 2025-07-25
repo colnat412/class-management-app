@@ -99,11 +99,9 @@ const Password = () => {
         const userData = data.data as User;
 
         if (isVerified) {
-          // Already logged in, just save token and navigate
           toast.success('Login successful!');
           localStorage.setItem('token', data.token || '');
         } else {
-          // Password created, now login to get token
           toast.success(data.message || 'Password created successfully');
 
           try {
@@ -133,7 +131,6 @@ const Password = () => {
         localStorage.removeItem('email');
         localStorage.setItem('user', JSON.stringify(userData));
 
-        // Navigate based on role
         if (userData.role === 'student') {
           router.push('/student/manage-lesson');
         } else {

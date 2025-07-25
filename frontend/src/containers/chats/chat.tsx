@@ -77,7 +77,7 @@ const ChatInterface = () => {
     });
 
     newSocket.on('chatHistory', (history: ChatMessageRequest[]) => {
-      const formattedHistory = history.map((msg: any) => ({
+      const formattedHistory = history.map((msg: ChatMessageRequest) => ({
         id: msg.id,
         sender: msg.sender === currentUser.email ? 'You' : msg.sender,
         content: msg.message,
