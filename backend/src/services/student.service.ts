@@ -123,9 +123,9 @@ export const updateStudent = async (
   }
 };
 
-export const deleteStudent = async (email: string) => {
+export const deleteStudent = async (id: string) => {
   try {
-    await db.collection('users').doc(email).delete();
+    await db.collection('users').doc(id).delete();
     return { success: true, message: 'Student deleted successfully' };
   } catch (error) {
     console.error('Error deleting student:', error);

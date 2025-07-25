@@ -361,7 +361,7 @@ const LessonManagement = ({ role }: LessonManagementProps) => {
   );
 
   return (
-    <div className="flex flex-col gap-4 h-full w-full p-6">
+    <div className="flex flex-col gap-4 w-full p-6">
       <h1 className=" text-2xl">
         {role === 'instructor' ? 'Manage Lessons' : 'View Lessons'}
       </h1>
@@ -496,7 +496,7 @@ const LessonManagement = ({ role }: LessonManagementProps) => {
                         >
                           <Button
                             size="sm"
-                            className="bg-orange-600 hover:bg-orange-700 text-white"
+                            className="bg-teal-600 hover:bg-teal-700 text-white"
                           >
                             <BookUp className="h-3 w-3 mr-1" />
                             Assign

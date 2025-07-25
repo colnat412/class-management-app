@@ -68,9 +68,9 @@ export const updateStudentHandler = async (req: Request, res: Response) => {
 };
 
 export const deleteStudentHandler = async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { id } = req.body;
   try {
-    const result = await deleteStudent(email);
+    const result = await deleteStudent(id);
     if (result.success) {
       return res.status(200).json(result);
     } else {

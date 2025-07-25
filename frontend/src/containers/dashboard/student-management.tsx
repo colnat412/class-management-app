@@ -95,6 +95,7 @@ const StudentManagement = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           body: JSON.stringify(body),
         }
@@ -114,6 +115,7 @@ const StudentManagement = () => {
             verified: false,
           } as User,
         ]);
+        fetchData();
         handleCloseDialog();
       } else {
         console.error('Failed to add student:', result.error);
@@ -145,6 +147,7 @@ const StudentManagement = () => {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           body: JSON.stringify(body),
         }
@@ -181,7 +184,7 @@ const StudentManagement = () => {
     }
   };
 
-  const handleDeleteStudent = async (email: string) => {
+  const handleDeleteStudent = async (id: string) => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/student/delete-student`,
@@ -189,8 +192,9 @@ const StudentManagement = () => {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ id }),
         }
       );
 
@@ -198,7 +202,7 @@ const StudentManagement = () => {
 
       if (res.ok) {
         toast.success(result.message || 'Student deleted successfully');
-        setData((prev) => prev.filter((student) => student.email !== email));
+        setData((prev) => prev.filter((student) => student.id !== id));
       } else {
         console.error('Failed to delete student:', result.error);
         toast.error(result.error || 'Failed to delete student');
@@ -426,7 +430,7 @@ const StudentManagement = () => {
                       Edit
                     </Button>
                     <ConfirmDeleteDialog
-                      onConfirm={() => handleDeleteStudent(student.email)}
+                      onConfirm={() => handleDeleteStudent(student.id)}
                       title="Delete Student"
                       description="Are you sure you want to delete this student? This action cannot be undone."
                     >

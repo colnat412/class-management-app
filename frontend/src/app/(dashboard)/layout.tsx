@@ -11,8 +11,8 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
   if (isLoading) {
     return (
       <SidebarProvider>
-        <div className="flex h-full">
-          <div className="w-64 h-full bg-white border-r animate-pulse" />
+        <div className="flex min-h-screen">
+          <div className="w-64 h-screen bg-white border-r animate-pulse" />
           <main className="flex-grow overflow-auto">{children}</main>
         </div>
       </SidebarProvider>
@@ -21,7 +21,7 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <div className="flex h-full w-full">
+      <div className="flex min-h-screen w-full">
         <AppSidebar role={role} />
         <main className="flex-grow overflow-auto">{children}</main>
       </div>
